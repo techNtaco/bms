@@ -1,0 +1,26 @@
+{
+  "name": "@repo/db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "exports": {
+    "./client": "./src/index.ts"
+  },
+"scripts": {
+  "generate": "cp ../../.env .env && prisma generate --schema=./prisma/schema.prisma && rm .env",
+  "migrate": "cp ../../.env .env && prisma migrate deploy --schema=./prisma/schema.prisma && rm .env",
+  "dev": "cp ../../.env .env && prisma migrate dev --schema=./prisma/schema.prisma && rm .env",
+  "setup": "cp ../../.env .env && prisma generate --schema=./prisma/schema.prisma && prisma migrate deploy --schema=./prisma/schema.prisma && rm .env"
+}
+,
+  "keywords": [],
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "prisma": "^6.11.1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "6.11.1"
+  }
+}
