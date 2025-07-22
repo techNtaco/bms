@@ -10,6 +10,7 @@ export default async function HomePage() {
 
   return (
     <main>
+      <h1>Hello World !!!</h1>
       <h1>First User</h1>
       <p><strong>ID:</strong> {user.id}</p>
       <p><strong>Email:</strong> {user.email}</p>
