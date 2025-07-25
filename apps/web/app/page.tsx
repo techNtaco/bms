@@ -7,6 +7,7 @@ export default async function HomePage() {
   if (!user) {
     return <div>
       <h1>CI/CD Deployment</h1>
+      <h2>Trigger the CI/CD</h2>
       <p>No user found.</p>
     </div>
   }
@@ -14,6 +15,7 @@ export default async function HomePage() {
   return (
     <main>
       <h1>CI/CD Deployment</h1>
+      <h2>Trigger the CI/CD</h2>
       <h1>Hello World !!!</h1>
       <h1>First User</h1>
       <p><strong>ID:</strong> {user.id}</p>
