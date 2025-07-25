@@ -5,11 +5,15 @@ export default async function HomePage() {
   const user = await client.user.findFirst()
 
   if (!user) {
-    return <div>No user found.</div>
+    return <div>
+      <h1>CI/CD Deployment</h1>
+      <p>No user found.</p>
+    </div>
   }
 
   return (
     <main>
+      <h1>CI/CD Deployment</h1>
       <h1>Hello World !!!</h1>
       <h1>First User</h1>
       <p><strong>ID:</strong> {user.id}</p>
