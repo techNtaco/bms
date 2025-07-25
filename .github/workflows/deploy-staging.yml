@@ -38,10 +38,11 @@ jobs:
           script: |
             cd /home/ubuntu/bms
 
-            echo "📥 Pulling latest code from staging branch"
-            git reset --hard
+            echo "📥 Checking out staging branch cleanly"
+            git fetch origin
+            git checkout -B staging origin/staging
+            git reset --hard origin/staging
             git clean -fd
-            git pull origin staging
 
             echo "🔧 Setting up environment variables"
             echo "DATABASE_URL=${{ secrets.STAGING_DATABASE_URL }}" > .env
