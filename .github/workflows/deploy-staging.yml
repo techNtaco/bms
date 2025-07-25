@@ -19,19 +19,24 @@ jobs:
           version: 8
           run_install: false
 
-      - name: Run tests
+      - name: Run all tests in monorepo
         run: |
           pnpm install
-          pnpm test
+          pnpm -r test
+
+      - name: Decode SSH private key
+        run: |
+          echo "${{ secrets.STAGING_SSH_KEY }}" | base64 -d > /tmp/staging.pem
+          chmod 600 /tmp/staging.pem
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.STAGING_HOST }}
           username: ${{ secrets.STAGING_USERNAME }}
-          key: ${{ secrets.STAGING_SSH_KEY }}
+          key_path: /tmp/staging.pem
           script: |
-            cd /home/ubuntu/app  # adjust to your project path
+            cd /home/ubuntu/app
             git pull origin staging
 
             echo "DATABASE_URL=${{ secrets.STAGING_DATABASE_URL }}" > .env
@@ -41,6 +46,6 @@ jobs:
 
             pnpm install
             pnpm --filter @repo/db run migrate
-            pnpm build || true  # if applicable
+            pnpm build || true
 
             pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
