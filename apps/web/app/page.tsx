@@ -1,6 +1,8 @@
 import { client } from "@repo/db/client";
 
-export default function HomePage({ user }: { user: any }) {
+export default async function HomePage() {
+  const user = await client.user.findFirst();
+
   if (!user) {
     return <div>No user found.</div>;
   }
@@ -14,14 +16,4 @@ export default function HomePage({ user }: { user: any }) {
       <p><strong>Email:</strong> {user.email}</p>
     </main>
   );
-}
-
-export async function getServerSideProps() {
-  const user = await client.user.findFirst();
-
-  return {
-    props: {
-      user: user || null,
-    },
-  };
 }
