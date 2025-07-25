@@ -1,0 +1,25 @@
+name: CI - Lint & Test
+
+on:
+  pull_request:
+    branches:
+      - staging
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ✅ Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🟨 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: 📦 Install dependencies & run tests
+        run: |
+          pnpm install
+          pnpm -r test
