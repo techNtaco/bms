@@ -10,42 +10,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: ✅ Checkout code
         uses: actions/checkout@v3
 
-      - name: Install pnpm
+      - name: 🟨 Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
           run_install: false
 
-      - name: Run all tests in monorepo
+      - name: 📦 Install dependencies & run tests
         run: |
           pnpm install
           pnpm -r test
 
-      - name: Decode SSH private key
+      - name: 🔐 Decode SSH Private Key
         run: |
           echo "${{ secrets.STAGING_SSH_KEY }}" | base64 -d > /tmp/staging.pem
           chmod 600 /tmp/staging.pem
 
-      - name: Deploy to EC2 via SSH
+      - name: 🚀 Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.STAGING_HOST }}
           username: ${{ secrets.STAGING_USERNAME }}
           key_path: /tmp/staging.pem
           script: |
-            cd /home/ubuntu/app
+            cd /home/ubuntu/bms
+
+            echo "📥 Pulling latest code from staging branch"
             git pull origin staging
 
+            echo "🔧 Setting up environment variables"
             echo "DATABASE_URL=${{ secrets.STAGING_DATABASE_URL }}" > .env
             echo "JWT_SECRET=${{ secrets.STAGING_JWT_SECRET }}" >> .env
             echo "NODE_ENV=production" >> .env
             echo "PORT=${{ secrets.STAGING_PORT }}" >> .env
 
+            echo "📦 Installing dependencies"
             pnpm install
-            pnpm --filter @repo/db run migrate
+
+            echo "🧱 Running DB setup"
+            pnpm --filter @repo/db run setup
+
+            echo "🔨 Building project"
             pnpm build || true
 
-            pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
+            echo "🟢 Starting app with PM2"
+            pm2 startOrReload ecosystem.config.js --env production
