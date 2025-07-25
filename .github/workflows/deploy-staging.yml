@@ -57,4 +57,4 @@ jobs:
             pnpm build || true
 
             echo "🟢 Starting app with PM2"
-            pm2 startOrReload ecosystem.config.js --env production
+            pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
