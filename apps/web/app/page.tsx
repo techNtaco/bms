@@ -8,6 +8,7 @@ export default async function HomePage() {
     return <div>
       <h1>CI/CD Deployment</h1>
       <h2>Trigger the CI/CD</h2>
+      <h3>Stranger Things</h3>
       <p>No user found.</p>
     </div>
   }
