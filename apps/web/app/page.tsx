@@ -14,6 +14,7 @@ export default async function HomePage() {
       <h1>First User</h1>
       <p><strong>ID:</strong> {user.id}</p>
       <p><strong>Email:</strong> {user.email}</p>
+      <h2>Finally Completed</h2>
     </main>
   );
 }
