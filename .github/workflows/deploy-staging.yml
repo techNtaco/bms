@@ -1,0 +1,46 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: Run tests
+        run: |
+          pnpm install
+          pnpm test
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USERNAME }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/app  # adjust to your project path
+            git pull origin staging
+
+            echo "DATABASE_URL=${{ secrets.STAGING_DATABASE_URL }}" > .env
+            echo "JWT_SECRET=${{ secrets.STAGING_JWT_SECRET }}" >> .env
+            echo "NODE_ENV=production" >> .env
+            echo "PORT=${{ secrets.STAGING_PORT }}" >> .env
+
+            pnpm install
+            pnpm --filter @repo/db run migrate
+            pnpm build || true  # if applicable
+
+            pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
