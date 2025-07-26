@@ -41,6 +41,10 @@ jobs:
             echo "📦 Installing deps"
             pnpm install
 
+            echo "Clean previous build artifacts"
+            pnpm turbo run clean
+
+
             echo "🔧 Writing environment"
             echo "DATABASE_URL=${{ secrets.PRODUCTION_DATABASE_URL }}" > .env
             echo "NODE_ENV=production" >> .env

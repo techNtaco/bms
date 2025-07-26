@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "http-server",
-      script: "apps/http-server/dist/index.js",
+      script: "apps/http-server/dist/src/index.js",
       env: {
         PORT: 3001,
         NODE_ENV: "production"
@@ -10,7 +10,7 @@ module.exports = {
     },
     {
       name: "ws-server",
-      script: "apps/ws-server/dist/index.js",
+      script: "apps/ws-server/dist/src/index.js",
       env: {
         PORT: 8080,
         NODE_ENV: "production"

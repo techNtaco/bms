@@ -8,7 +8,7 @@ const { loadEnvConfig } = envPackage
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 // Load from root .env.local
-loadEnvConfig(resolve(__dirname, '../../'), false)
+loadEnvConfig(resolve(__dirname, '../../'), true)
 
 const nextConfig = {
   reactStrictMode: true
