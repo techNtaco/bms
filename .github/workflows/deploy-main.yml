@@ -8,8 +8,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: ✅ Checkout
+      - name: ✅ Checkout latest main
         uses: actions/checkout@v3
 
       - name: 🟨 Setup pnpm
@@ -23,7 +24,7 @@ jobs:
           echo "${{ secrets.PRODUCTION_SSH_KEY }}" | base64 -d > /tmp/prod.pem
           chmod 600 /tmp/prod.pem
 
-      - name: 🚀 Deploy to EC2
+      - name: 🚀 Deploy to EC2 Production
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.PRODUCTION_HOST }}
@@ -31,16 +32,24 @@ jobs:
           key_path: /tmp/prod.pem
           script: |
             cd /home/ubuntu/bms
+
+            echo "📥 Fetching latest main"
             git reset --hard
             git clean -fd
             git pull origin main
 
+            echo "📦 Installing deps"
             pnpm install
 
+            echo "🔧 Writing environment"
             echo "DATABASE_URL=${{ secrets.PRODUCTION_DATABASE_URL }}" > .env
             echo "NODE_ENV=production" >> .env
 
+            echo "🧱 Running DB setup"
             pnpm --filter @repo/db run setup
+
+            echo "🔨 Building project"
             pnpm build
 
+            echo "🟢 Restarting app"
             pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
