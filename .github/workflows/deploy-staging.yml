@@ -1,0 +1,61 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ✅ Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🟨 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: 📦 Install dependencies & run tests
+        run: |
+          pnpm install
+          pnpm -r test
+
+      - name: 🔐 Decode SSH Private Key
+        run: |
+          echo "${{ secrets.STAGING_SSH_KEY }}" | base64 -d > /tmp/staging.pem
+          chmod 600 /tmp/staging.pem
+
+      - name: 🚀 Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USERNAME }}
+          key_path: /tmp/staging.pem
+          script: |
+            cd /home/ubuntu/bms
+
+            echo "📥 Checking out staging branch cleanly"
+            git fetch origin
+            git checkout -B staging origin/staging
+            git reset --hard origin/staging
+            git clean -fd
+
+            echo "🔧 Setting up environment variables"
+            echo "DATABASE_URL=${{ secrets.STAGING_DATABASE_URL }}" > .env
+            echo "NODE_ENV=staging" >> .env
+
+            echo "📦 Installing dependencies"
+            pnpm install
+
+            echo "🧱 Running DB setup"
+            pnpm --filter @repo/db run setup
+
+            echo "🔨 Building project"
+            pnpm build
+
+            echo "🟢 Starting app with PM2"
+            pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
