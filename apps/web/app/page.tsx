@@ -1,3 +1,4 @@
+import '../env.mjs'
 import { client } from "@repo/db/client";
 
 export default async function HomePage() {
