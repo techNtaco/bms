@@ -1,4 +1,4 @@
-name: CI - Lint & Test
+name: CI - Lint & Test (Staging)
 
 on:
   pull_request:
@@ -6,11 +6,12 @@ on:
       - staging
 
 jobs:
-  ci:
+  lint-and-test:
     runs-on: ubuntu-latest
+    name: 🧪 Lint & Test
 
     steps:
-      - name: ✅ Checkout code
+      - name: ✅ Checkout Code
         uses: actions/checkout@v3
 
       - name: 🟨 Setup pnpm
@@ -19,7 +20,8 @@ jobs:
           version: 8
           run_install: false
 
-      - name: 📦 Install dependencies & run tests
-        run: |
-          pnpm install
-          pnpm -r test
+      - name: 📦 Install Dependencies
+        run: pnpm install
+
+      - name: 🧪 Run Tests Across Workspace
+        run: pnpm -r test
