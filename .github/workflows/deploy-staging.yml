@@ -46,9 +46,7 @@ jobs:
 
             echo "🔧 Setting up environment variables"
             echo "DATABASE_URL=${{ secrets.STAGING_DATABASE_URL }}" > .env
-            echo "JWT_SECRET=${{ secrets.STAGING_JWT_SECRET }}" >> .env
-            echo "NODE_ENV=production" >> .env
-            echo "PORT=${{ secrets.STAGING_PORT }}" >> .env
+            echo "NODE_ENV=staging" >> .env
 
             echo "📦 Installing dependencies"
             pnpm install

@@ -1,0 +1,34 @@
+name: CI - Production Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-pr-origin-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚨 Ensure PR is from staging only
+        run: |
+          echo "Checking if PR is from staging..."
+          if [[ "${{ github.head_ref }}" != "staging" ]]; then
+            echo "❌ PR is not from staging. Current source: ${{ github.head_ref }}"
+            exit 1
+          fi
+          echo "✅ PR is from staging. Proceeding."
+
+      - name: ✅ Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🟨 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: 📦 Install dependencies & run tests
+        run: |
+          pnpm install
+          pnpm -r test
