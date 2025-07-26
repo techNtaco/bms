@@ -16,7 +16,6 @@ jobs:
     steps:
       - name: ❌ Block PRs not from staging
         run: |
-          echo "PR source: ${{ github.head_ref }}"
           if [[ "${{ github.head_ref }}" != "staging" ]]; then
             echo "Only PRs from 'staging' can be merged into 'main'."
             exit 1
@@ -58,18 +57,12 @@ jobs:
             git clean -fd
             git pull origin main
 
-            echo "📦 Installing deps"
             pnpm install
 
-            echo "🌱 Setting up .env"
             echo "DATABASE_URL=${{ secrets.PRODUCTION_DATABASE_URL }}" > .env
             echo "NODE_ENV=production" >> .env
 
-            echo "🧱 Running DB setup"
             pnpm --filter @repo/db run setup
-
-            echo "🔨 Building project"
             pnpm build
 
-            echo "🟢 Restarting with PM2"
             pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
