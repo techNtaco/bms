@@ -10,16 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🚨 Ensure PR is from staging only
+      - name: 🚨 Block PRs not from staging
         run: |
-          echo "Checking if PR is from staging..."
+          echo "🔍 Checking PR source branch..."
           if [[ "${{ github.head_ref }}" != "staging" ]]; then
-            echo "❌ PR is not from staging. Current source: ${{ github.head_ref }}"
+            echo "❌ This PR is not from 'staging'. Source: ${{ github.head_ref }}"
             exit 1
           fi
-          echo "✅ PR is from staging. Proceeding."
+          echo "✅ PR is from 'staging'. Proceeding."
 
-      - name: ✅ Checkout code
+      - name: ✅ Checkout PR code
         uses: actions/checkout@v3
 
       - name: 🟨 Setup pnpm
@@ -28,7 +28,7 @@ jobs:
           version: 8
           run_install: false
 
-      - name: 📦 Install dependencies & run tests
+      - name: 📦 Install dependencies and run tests
         run: |
           pnpm install
           pnpm -r test

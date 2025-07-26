@@ -19,17 +19,12 @@ jobs:
           version: 8
           run_install: false
 
-      - name: 📦 Install dependencies & run tests
-        run: |
-          pnpm install
-          pnpm -r test
-
       - name: 🔐 Decode SSH Private Key
         run: |
           echo "${{ secrets.STAGING_SSH_KEY }}" | base64 -d > /tmp/staging.pem
           chmod 600 /tmp/staging.pem
 
-      - name: 🚀 Deploy to EC2
+      - name: 🚀 Deploy to Staging EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.STAGING_HOST }}
